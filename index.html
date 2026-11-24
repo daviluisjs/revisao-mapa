@@ -1,21 +1,30 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Revisão do funil</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet"><style>:root {
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Revisão do funil</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet"><style>/* Página de revisão: tema escuro e dourado. */
+:root {
   color-scheme: dark;
-  --fundo: #0e0d09;
-  --cartao: #17150f;
-  --cartao2: #1f1c14;
-  --borda: rgba(255, 237, 183, 0.1);
-  --borda2: rgba(255, 237, 183, 0.18);
-  --texto: #f6f0e1;
-  --suave: #b8ad96;
-  --apagado: #857b66;
-  --ouro: #f3ce5d;
-  --ouro-escuro: #c68c0f;
+  --fundo: #0c0c0d;
+  --fundo2: #111113;
+  --cartao: #161618;
+  --cartao2: #1e1e21;
+  --borda: rgba(255, 255, 255, 0.08);
+  --borda2: rgba(255, 255, 255, 0.15);
+  --texto: #f4f4f5;
+  --suave: #a1a1aa;
+  --apagado: #71717a;
+  --ouro: #f3bc56;
+  --ouro-claro: #fbd88a;
+  --ouro-escuro: #b57a10;
+  --tinta: #16130e;
   --ok: #34d399;
   --espera: #fbbf24;
+  --obra: #7dd3fc;
   --fazer: #a1a1aa;
   --trava: #f87171;
+  --verde: #22c55e;
   --raio: 18px;
   --titulo: "Poppins", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --topo: 56px;
+  --vidro: rgba(17, 17, 19, 0.84);
 }
 
 * {
@@ -23,11 +32,13 @@
 }
 
 html {
+  background: var(--fundo);
   scroll-behavior: smooth;
-  scroll-padding-top: 76px;
+  scroll-padding-top: calc(var(--topo) + 16px);
 }
 
-html.travado {
+html.travado,
+html.modo-canvas {
   overflow: hidden;
 }
 
@@ -37,6 +48,7 @@ body {
   color: var(--texto);
   font: 15px/1.55 "Inter", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
@@ -60,23 +72,43 @@ img[data-zoom] {
 h1,
 h2,
 h3,
-h4 {
+h4,
+h5 {
   font-family: var(--titulo);
   line-height: 1.2;
   margin: 0;
 }
 
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.ico {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 /* ---------- topo ---------- */
 
 .topo {
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 30;
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 10px max(16px, calc((100vw - 1180px) / 2));
-  background: rgba(14, 13, 9, 0.86);
+  gap: 18px;
+  min-height: 56px;
+  padding: 0 16px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  background: rgba(12, 12, 13, 0.9);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--borda);
@@ -85,18 +117,85 @@ h4 {
 .marca {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
-  font-size: 12px;
   color: var(--suave);
-  line-height: 1.2;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 500;
 }
 
-.marca b {
+.marca .logo {
   display: block;
+  width: auto;
+  height: 18px;
+}
+
+.marca span {
+  padding-left: 12px;
+  border-left: 1px solid var(--borda2);
+  white-space: nowrap;
+}
+
+.abas {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.abas::-webkit-scrollbar {
+  display: none;
+}
+
+.abas a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  color: var(--suave);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.abas a:hover {
   color: var(--texto);
-  font-family: var(--titulo);
-  font-size: 14px;
+  background: var(--cartao2);
+}
+
+.abas a.ativo {
+  color: var(--ouro);
+  background: rgba(243, 188, 86, 0.1);
+}
+
+.abas i {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: var(--cartao2);
+  color: var(--suave);
+  font: 600 11px/18px "Inter", sans-serif;
+  font-style: normal;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .topo {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding-top: 10px;
+    padding-bottom: 6px;
+  }
+
+  .abas {
+    flex-basis: 100%;
+    margin: 0 -16px;
+    padding: 0 10px;
+  }
 }
 
 .selo {
@@ -106,57 +205,21 @@ h4 {
   height: 34px;
   border-radius: 50%;
   background: linear-gradient(140deg, var(--ouro), var(--ouro-escuro));
-  color: #1a1505;
-  font: 800 16px var(--titulo);
+  color: var(--tinta);
+  font: 700 16px var(--titulo);
 }
 
-.topo nav {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  margin-left: auto;
-}
+/* ---------- vistas ---------- */
 
-.topo nav::-webkit-scrollbar {
+html.modo-canvas .vista-doc,
+html.modo-doc .vista-canvas {
   display: none;
 }
 
-.topo nav a {
-  padding: 7px 12px;
-  border-radius: 999px;
-  color: var(--suave);
-  text-decoration: none;
-  font-size: 13.5px;
-  font-weight: 500;
-  white-space: nowrap;
+.vista-doc {
+  padding-top: var(--topo);
 }
 
-.topo nav a:hover,
-.topo nav a.ativo {
-  background: var(--cartao2);
-  color: var(--texto);
-}
-
-@media (max-width: 760px) {
-  .topo {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding-bottom: 8px;
-  }
-
-  .topo nav {
-    margin: 0 -16px;
-    padding: 0 12px;
-  }
-
-  html {
-    scroll-padding-top: 108px;
-  }
-}
-
-/* ---------- estrutura ---------- */
 
 main {
   max-width: 1180px;
@@ -228,283 +291,9 @@ h3.sub {
   --c: var(--trava);
 }
 
-/* ---------- resumo ---------- */
-
-.hero {
-  padding-top: 44px;
-}
-
-.hero .data {
-  margin: 0 0 10px;
-  color: var(--ouro);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.hero h1 {
-  font-size: clamp(30px, 5.4vw, 50px);
-  font-weight: 800;
-  max-width: 820px;
-}
-
-.lead {
-  font-size: 17px;
-  color: var(--suave);
-  max-width: 760px;
-  margin: 14px 0 26px;
-}
-
-.numeros {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.numeros div {
-  padding: 18px;
-  border-radius: var(--raio);
-  background: var(--cartao);
-  border: 1px solid var(--borda);
-}
-
-.numeros b {
-  display: block;
-  font: 800 clamp(24px, 3.4vw, 32px) var(--titulo);
-  color: var(--ouro);
-}
-
-.numeros span {
-  color: var(--suave);
-  font-size: 13.5px;
-}
-
-@media (max-width: 760px) {
-  .numeros {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.legenda {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 10px;
-  margin-top: 18px;
-  color: var(--suave);
-  font-size: 13px;
-}
-
-.legenda .item {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-right: 12px;
-}
-
-/* ---------- funil ---------- */
-
-.funil {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: min(290px, 80vw);
-  gap: 34px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  list-style: none;
-  margin: 0 -16px;
-  padding: 4px 16px 18px;
-  scrollbar-color: var(--borda2) transparent;
-}
-
-.etapa {
-  position: relative;
-  scroll-snap-align: start;
-  display: flex;
-  flex-direction: column;
-  border-radius: var(--raio);
-  background: var(--cartao);
-  border: 1px solid var(--borda);
-}
-
-.etapa:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  right: -28px;
-  top: 190px;
-  width: 22px;
-  height: 22px;
-  background: var(--ouro);
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
-}
-
-.etapa-tela {
-  position: relative;
-  padding: 10px 10px 0;
-}
-
-.etapa-tela img {
-  display: block;
-  width: 100%;
-  height: 360px;
-  object-fit: cover;
-  object-position: top;
-  border-radius: 12px;
-}
-
-.ver-inteira {
-  position: absolute;
-  right: 18px;
-  bottom: 8px;
-  padding: 6px 11px;
-  border: 1px solid var(--borda2);
-  border-radius: 999px;
-  background: rgba(14, 13, 9, 0.88);
-  color: var(--texto);
-  font: 600 12px "Inter", sans-serif;
-  cursor: pointer;
-}
-
-.ver-inteira:hover {
-  border-color: var(--ouro);
-}
-
-.etapa-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 14px 16px 16px;
-  flex: 1;
-}
-
-.etapa-info p {
-  margin: 0;
-  color: var(--suave);
-  font-size: 14px;
-}
-
-.etapa-info h3 {
-  font-size: 19px;
-}
-
-.etapa-info .preco {
-  color: var(--texto);
-  font: 700 17px var(--titulo);
-}
-
-.fase {
-  color: var(--apagado);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.fase b {
-  display: inline-grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  margin-right: 4px;
-  border-radius: 50%;
-  background: var(--ouro);
-  color: #1a1505;
-  font-size: 11px;
-}
-
-.abrir {
-  margin-top: auto;
-  padding-top: 6px;
-  font-size: 13.5px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.bumps {
-  list-style: none;
-  margin: 2px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 6px;
-  width: 100%;
-}
-
-.bumps li {
-  display: grid;
-  grid-template-columns: 34px 1fr auto;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 8px 5px 5px;
-  border-radius: 10px;
-  background: var(--cartao2);
-  border-left: 3px solid var(--cor);
-  font-size: 13px;
-}
-
-.bumps img.mini {
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
-  object-fit: cover;
-}
-
-.bumps b {
-  font-size: 12.5px;
-}
-
-.extras {
-  display: flex;
-  gap: 6px;
-}
-
-.extras img {
-  width: 54px;
-  height: 96px;
-  object-fit: cover;
-  object-position: top;
-  border-radius: 7px;
-  border: 1px solid var(--borda);
-}
-
-.desvios {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.desvio {
-  display: flex;
-  gap: 12px;
-  padding: 14px;
-  border-radius: var(--raio);
-  background: var(--cartao);
-  border: 1px dashed var(--borda2);
-}
-
-.desvio-tela img {
-  width: 64px;
-  height: 118px;
-  object-fit: cover;
-  object-position: top;
-  border-radius: 8px;
-}
-
-.desvio h4 {
-  font-size: 15px;
-  margin-bottom: 4px;
-}
-
-.desvio p {
-  margin: 0;
-  color: var(--suave);
-  font-size: 13.5px;
-}
 
 .ticket {
-  margin-top: 22px;
+  margin: 0 0 22px;
   padding: 18px;
   border-radius: var(--raio);
   background: var(--cartao);
@@ -528,7 +317,7 @@ h3.sub {
   min-width: 0;
   border-radius: 8px;
   background: var(--cor);
-  color: #16130b;
+  color: var(--tinta);
   overflow: hidden;
 }
 
@@ -595,7 +384,7 @@ h3.sub {
 }
 
 .produto-img {
-  background: #0a0906;
+  background: #0a0a0b;
 }
 
 .produto-img img {
@@ -873,7 +662,7 @@ h3.sub {
   aspect-ratio: 1;
   object-fit: contain;
   background:
-    repeating-conic-gradient(#15130e 0 25%, #1b1912 0 50%) 0 0 / 18px 18px;
+    repeating-conic-gradient(#121214 0 25%, #18181b 0 50%) 0 0 / 18px 18px;
 }
 
 .grade figcaption {
@@ -1097,7 +886,7 @@ footer {
   z-index: 50;
   display: flex;
   flex-direction: column;
-  background: #070604;
+  background: #060607;
 }
 
 .zoom[hidden] {
@@ -1126,7 +915,7 @@ footer {
   padding: 7px 14px;
   border-radius: 999px;
   background: var(--ouro);
-  color: #1a1505;
+  color: var(--tinta);
   font-weight: 700;
   text-decoration: none;
   font-size: 13px;
@@ -1167,6 +956,1487 @@ footer {
   max-height: none;
 }
 
+.status.obra {
+  --c: var(--obra);
+}
+
+.chips-produto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ver-inteira {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--borda2);
+  border-radius: 99px;
+  background: var(--cartao2);
+  color: var(--texto);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ver-inteira:hover {
+  border-color: var(--ouro);
+  color: var(--ouro);
+}
+
+/* ======================================================================
+   Canvas
+   ====================================================================== */
+
+.vista-canvas {
+  position: fixed;
+  inset: var(--topo) 0 0;
+  overflow: hidden;
+  background: var(--fundo);
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  background-color: var(--fundo);
+  background-image: radial-gradient(circle, rgba(243, 188, 86, 0.16) 1.1px, transparent 1.6px);
+  background-size: 26px 26px;
+}
+
+.canvas::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55));
+}
+
+.canvas.arrastando {
+  cursor: grabbing;
+}
+
+.canvas-mundo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.canvas.animando .canvas-mundo {
+  transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Faixas das fases */
+.faixa {
+  position: absolute;
+  border: 1px dashed rgba(255, 255, 255, 0.075);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.faixa span {
+  position: absolute;
+  left: 22px;
+  top: 16px;
+  color: var(--apagado);
+  font: 600 13px "Inter", sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Ligações */
+.arestas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.aresta {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.aresta.principal {
+  stroke: rgba(243, 188, 86, 0.7);
+}
+
+.aresta.fonte {
+  stroke: rgba(243, 188, 86, 0.36);
+}
+
+.aresta.sim {
+  stroke: rgba(34, 197, 94, 0.75);
+}
+
+.aresta.nao {
+  stroke: rgba(161, 161, 170, 0.5);
+}
+
+.aresta.ramo {
+  stroke: rgba(243, 188, 86, 0.55);
+  stroke-dasharray: 7 7;
+}
+
+.aresta.futuro {
+  stroke: rgba(161, 161, 170, 0.38);
+  stroke-dasharray: 3 8;
+}
+
+.fluxo {
+  fill: none;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 22;
+  animation: fluir 1.3s linear infinite;
+}
+
+.fluxo.principal,
+.fluxo.fonte,
+.fluxo.ramo {
+  stroke: var(--ouro-claro);
+}
+
+.fluxo.sim {
+  stroke: #86efac;
+}
+
+.fluxo.nao {
+  stroke: #d4d4d8;
+  opacity: 0.55;
+}
+
+@keyframes fluir {
+  to {
+    stroke-dashoffset: -22.1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fluxo {
+    display: none;
+  }
+}
+
+.seta.ouro {
+  fill: rgba(243, 188, 86, 0.85);
+}
+
+.seta.fonte {
+  fill: rgba(243, 188, 86, 0.5);
+}
+
+.seta.verde {
+  fill: rgba(34, 197, 94, 0.85);
+}
+
+.seta.cinza {
+  fill: rgba(161, 161, 170, 0.6);
+}
+
+.rotulos {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.rotulo {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  color: var(--suave);
+  font: 500 12.5px/1.2 "Inter", sans-serif;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+
+.rotulo b {
+  color: var(--ouro);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rotulo.sim {
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.rotulo.sim b {
+  color: #4ade80;
+}
+
+.rotulo.nao b {
+  color: var(--texto);
+}
+
+.rotulo.so-num {
+  padding: 3px 9px;
+}
+
+/* Blocos */
+.no {
+  position: absolute;
+  width: 248px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #1b1b1e, #141416);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.no:hover {
+  border-color: rgba(243, 188, 86, 0.45);
+}
+
+.no:focus-visible {
+  outline: 2px solid var(--ouro);
+  outline-offset: 3px;
+}
+
+.no.ativo {
+  border-color: var(--ouro);
+  box-shadow:
+    0 0 0 4px rgba(243, 188, 86, 0.16),
+    0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.no.empilhado {
+  box-shadow:
+    7px 7px 0 -1px #141416,
+    7px 7px 0 0 rgba(255, 255, 255, 0.08),
+    14px 14px 0 -1px #111113,
+    14px 14px 0 0 rgba(255, 255, 255, 0.06),
+    0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+.no.empilhado.ativo {
+  box-shadow:
+    7px 7px 0 -1px #141416,
+    7px 7px 0 0 rgba(243, 188, 86, 0.3),
+    14px 14px 0 -1px #111113,
+    14px 14px 0 0 rgba(243, 188, 86, 0.18),
+    0 0 0 4px rgba(243, 188, 86, 0.16),
+    0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.no-tela {
+  position: relative;
+  height: 236px;
+  margin: 7px 7px 0;
+  overflow: hidden;
+  border-radius: 13px;
+  background: #0a0a0b;
+}
+
+.no.compacto .no-tela {
+  height: 150px;
+}
+
+.no-tela img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.no-tela::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 62%, rgba(20, 20, 22, 0.92));
+  pointer-events: none;
+}
+
+.no-preco,
+.no-pilha {
+  position: absolute;
+  z-index: 1;
+  border-radius: 99px;
+  font: 700 13px/1 var(--titulo);
+}
+
+.no-preco {
+  left: 10px;
+  bottom: 10px;
+  padding: 7px 11px;
+  background: linear-gradient(180deg, #fcd77e, #f3bc56 45%, #e3a23a);
+  color: var(--tinta);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.no-pilha {
+  right: 10px;
+  top: 10px;
+  padding: 6px 10px;
+  background: rgba(12, 12, 13, 0.82);
+  border: 1px solid var(--borda2);
+  color: var(--texto);
+  font-size: 12px;
+}
+
+.no-corpo {
+  padding: 12px 15px 14px;
+}
+
+.no-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.no-passo {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(243, 188, 86, 0.7);
+  color: var(--ouro);
+  font: 700 12px/1 var(--titulo);
+}
+
+.no-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--suave);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-status::before {
+  content: "";
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c, var(--fazer));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--fazer)) 20%, transparent);
+}
+
+.no-status.ok {
+  --c: var(--ok);
+}
+
+.no-status.espera {
+  --c: var(--espera);
+}
+
+.no-status.obra {
+  --c: var(--obra);
+}
+
+.no-status.fazer {
+  --c: var(--fazer);
+}
+
+.no h3 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.no-sub {
+  margin: 3px 0 0;
+  color: var(--suave);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.no-cab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.no-icone,
+.no-foto {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  border-radius: 13px;
+  background: rgba(243, 188, 86, 0.1);
+  border: 1px solid rgba(243, 188, 86, 0.25);
+  color: var(--ouro);
+}
+
+.no-icone .ico {
+  width: 22px;
+  height: 22px;
+}
+
+.no-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  pointer-events: none;
+}
+
+.no-metricas {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px solid var(--borda);
+}
+
+.no-metricas div {
+  min-width: 0;
+}
+
+.no-metricas b {
+  display: block;
+  font: 600 24px/1.05 var(--titulo);
+  font-variant-numeric: tabular-nums;
+  color: var(--texto);
+}
+
+.no-metricas .seg b {
+  font-size: 18px;
+  line-height: 1.25;
+  color: var(--suave);
+}
+
+.no-metricas span {
+  display: block;
+  margin-top: 3px;
+  color: var(--apagado);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.no-metricas.vazio {
+  display: block;
+}
+
+.no-metricas.vazio span {
+  margin: 0;
+  font-size: 12px;
+}
+
+.canvas[data-modo="teste"] .no-metricas b,
+.canvas[data-modo="teste"] .rotulo b {
+  color: var(--espera);
+}
+
+.no.obra {
+  border-style: dashed;
+  border-color: rgba(125, 211, 252, 0.3);
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.022) 0 10px, transparent 10px 20px),
+    linear-gradient(180deg, #19191c, #131315);
+}
+
+.no.obra .no-icone {
+  background: rgba(125, 211, 252, 0.08);
+  border-color: rgba(125, 211, 252, 0.25);
+  color: var(--obra);
+}
+
+.canvas.v .no.fonte {
+  width: 184px;
+}
+
+.canvas.v .no.fonte .no-cab {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* ---------- camadas por cima do canvas ---------- */
+
+.hud,
+.controles,
+.minimapa,
+.passos {
+  position: absolute;
+  z-index: 6;
+  background: var(--vidro);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--borda);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.hud {
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px 16px;
+  min-height: 52px;
+  padding: 8px 14px;
+  border-width: 0 0 1px;
+  box-shadow: none;
+}
+
+.hud-titulo {
+  font: 600 14.5px var(--titulo);
+  white-space: nowrap;
+}
+
+.hud-num {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--suave);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.hud-num b {
+  color: var(--texto);
+  font: 600 14px var(--titulo);
+  font-variant-numeric: tabular-nums;
+}
+
+.canvas[data-modo="teste"] ~ .hud .hud-num b {
+  color: var(--espera);
+}
+
+.hud-sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--apagado);
+}
+
+.hud-aviso {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 5px 11px;
+  border-left: 2px solid var(--ouro);
+  border-radius: 0 8px 8px 0;
+  background: rgba(243, 188, 86, 0.07);
+  color: var(--suave);
+  font-size: 12.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-aviso[hidden] {
+  display: none;
+}
+
+.hud-aviso.teste {
+  border-color: var(--espera);
+  background: rgba(251, 191, 36, 0.07);
+}
+
+.modo {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 2px;
+  margin-left: auto;
+  padding: 3px;
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--borda);
+}
+
+.modo button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--suave);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modo button[aria-pressed="true"] {
+  background: #2a2a2e;
+  color: var(--texto);
+}
+
+.modo button[data-modo="teste"][aria-pressed="true"] {
+  background: rgba(251, 191, 36, 0.16);
+  color: var(--espera);
+}
+
+.modo i {
+  padding: 0 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  font: 600 11px/17px "Inter", sans-serif;
+  font-style: normal;
+}
+
+@media (max-width: 1100px) {
+  .hud-titulo {
+    display: none;
+  }
+}
+
+.controles {
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 13px;
+}
+
+.controles button {
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.controles button:hover {
+  background: var(--cartao2);
+}
+
+.zoom-valor {
+  font: 600 12px "Inter", sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: var(--suave) !important;
+  min-width: 50px !important;
+}
+
+.minimapa {
+  left: 14px;
+  bottom: 14px;
+  width: 210px;
+  padding: 8px;
+  border-radius: 13px;
+  cursor: pointer;
+}
+
+.minimapa svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mm-faixa {
+  fill: rgba(255, 255, 255, 0.025);
+}
+
+.mm-no {
+  fill: rgba(243, 188, 86, 0.45);
+}
+
+.mm-no.obra {
+  fill: rgba(125, 211, 252, 0.35);
+}
+
+.mm-no.ativo {
+  fill: var(--ouro);
+}
+
+.mm-vista {
+  fill: rgba(255, 255, 255, 0.06);
+  stroke: rgba(243, 188, 86, 0.8);
+  vector-effect: non-scaling-stroke;
+  stroke-width: 1.2;
+}
+
+.passos {
+  left: 50%;
+  bottom: 14px;
+  display: flex;
+  gap: 2px;
+  max-width: calc(100% - 28px);
+  padding: 4px;
+  border-radius: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  transform: translateX(-50%);
+}
+
+.passos::-webkit-scrollbar {
+  display: none;
+}
+
+.passos button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--suave);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.passos button:hover,
+.passos button.ativo {
+  background: var(--cartao2);
+  color: var(--texto);
+}
+
+.passos b {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(243, 188, 86, 0.14);
+  color: var(--ouro);
+  font: 700 10.5px/1 var(--titulo);
+}
+
+.dica-canvas {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 66px;
+  margin: 0;
+  color: var(--apagado);
+  font-size: 12px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: opacity 0.6s;
+}
+
+.dica-canvas.some {
+  opacity: 0;
+}
+
+@media (max-width: 1240px) {
+  .minimapa {
+    display: none;
+  }
+}
+
+/* ---------- painel ---------- */
+
+.painel {
+  position: absolute;
+  z-index: 12;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(500px, 100%);
+  background: #111113;
+  border-left: 1px solid var(--borda2);
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.55);
+  animation: painel-entra 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.painel[hidden] {
+  display: none;
+}
+
+@keyframes painel-entra {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+}
+
+.painel-barra {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  padding: 8px 12px 8px 22px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.painel-barra span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--suave);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.painel-fechar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--borda2);
+  border-radius: 50%;
+  background: var(--cartao);
+  cursor: pointer;
+}
+
+.painel-fechar:hover {
+  border-color: var(--ouro);
+  color: var(--ouro);
+}
+
+.painel-alca {
+  display: none;
+}
+
+.painel-rolagem {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px 22px 48px;
+  scrollbar-color: var(--borda2) transparent;
+}
+
+.vista-canvas.com-painel .controles {
+  right: calc(min(500px, 100%) + 14px);
+  bottom: 68px;
+}
+
+.vista-canvas.com-painel .passos {
+  left: calc((100% - min(500px, 100%)) / 2);
+  max-width: calc(100% - min(500px, 100%) - 28px);
+}
+
+.vista-canvas.com-painel .minimapa {
+  display: none;
+}
+
+.vista-canvas.com-painel .dica-canvas {
+  display: none;
+}
+
+.vista-canvas.com-painel .hud {
+  right: min(500px, 100%);
+}
+
+@media (max-width: 1100px) {
+  .vista-canvas.com-painel .passos {
+    display: none;
+  }
+
+  .vista-canvas.com-painel .hud-aviso .longo {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .painel {
+    top: auto;
+    left: 0;
+    width: 100%;
+    height: 86%;
+    border-left: 0;
+    border-top: 1px solid var(--borda2);
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.6);
+    animation-name: painel-sobe;
+  }
+
+  @keyframes painel-sobe {
+    from {
+      transform: translateY(60px);
+      opacity: 0;
+    }
+  }
+
+  .painel-alca {
+    display: block;
+    flex-shrink: 0;
+    height: 22px;
+    touch-action: none;
+  }
+
+  .painel-alca::before {
+    content: "";
+    display: block;
+    width: 42px;
+    height: 5px;
+    margin: 9px auto 0;
+    border-radius: 99px;
+    background: var(--borda2);
+  }
+
+  .painel-barra {
+    min-height: 46px;
+    padding: 0 10px 6px 16px;
+  }
+
+  .painel-rolagem {
+    padding: 16px 16px calc(40px + env(safe-area-inset-bottom));
+  }
+
+  .vista-canvas.com-painel .controles,
+  .vista-canvas.com-painel .passos {
+    display: none;
+  }
+
+  .hud {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    padding: 8px 10px;
+  }
+
+  .hud-aviso {
+    order: 3;
+    flex-basis: 100%;
+    font-size: 12px;
+  }
+
+  .hud-aviso .longo,
+  .hud-d1,
+  .hud-num .hud-sep {
+    display: none;
+  }
+
+  .vista-canvas.com-painel .hud {
+    right: 0;
+  }
+
+  .controles {
+    right: 10px;
+    bottom: 64px;
+  }
+
+  .controles button {
+    min-width: 34px;
+    height: 34px;
+  }
+
+  .zoom-valor {
+    display: none !important;
+  }
+
+  .passos {
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    max-width: none;
+    transform: none;
+  }
+
+  .dica-canvas {
+    display: none;
+  }
+}
+
+/* Conteúdo do painel */
+.painel-no {
+  padding-top: 0;
+}
+
+.p-cab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.p-cab .no-passo {
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
+}
+
+.p-cab h2 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.p-cab p {
+  margin: 2px 0 0;
+  color: var(--suave);
+  font-size: 13.5px;
+}
+
+.p-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.p-chip-preco {
+  padding: 3px 11px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #fcd77e, #f3bc56 45%, #e3a23a);
+  color: var(--tinta);
+  font: 700 13px/1.4 var(--titulo);
+}
+
+.p-sec {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--borda);
+}
+
+.p-sec h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--suave);
+  font: 600 11.5px "Inter", sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.p-sec h4 .ico {
+  width: 15px;
+  height: 15px;
+  color: var(--ouro);
+}
+
+.p-sec h5 {
+  margin: 14px 0 6px;
+  font: 600 13px "Inter", sans-serif;
+}
+
+.p-sec h5:first-of-type {
+  margin-top: 0;
+}
+
+.p-sec h5 small {
+  color: var(--apagado);
+  font-weight: 400;
+}
+
+.p-texto {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.p-nota {
+  margin: 10px 0 0;
+  color: var(--apagado);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.p-lista {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+}
+
+.p-lista li + li {
+  margin-top: 6px;
+}
+
+.celulares {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-color: var(--borda2) transparent;
+}
+
+.celular {
+  flex-shrink: 0;
+  width: 196px;
+  margin: 0;
+}
+
+.celular-tela {
+  padding: 5px;
+  border-radius: 26px;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+.celular-tela img {
+  display: block;
+  width: 100%;
+  border-radius: 21px;
+}
+
+.celular figcaption {
+  margin-top: 8px;
+  color: var(--suave);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.celular .ver-inteira {
+  margin-top: 10px;
+}
+
+.p-links {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p-links a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 10px;
+  padding: 10px 13px;
+  border-radius: 12px;
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.p-links a:hover {
+  border-color: rgba(243, 188, 86, 0.5);
+}
+
+.p-links span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.p-links small {
+  grid-column: 1;
+  color: var(--suave);
+  font: 12px/1.4 var(--mono);
+  word-break: break-all;
+}
+
+.p-links .ico {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 16px;
+  height: 16px;
+  color: var(--ouro);
+}
+
+.p-dl {
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  gap: 9px 14px;
+  margin: 0;
+  font-size: 13.5px;
+}
+
+.p-dl dt {
+  color: var(--apagado);
+  font-size: 12.5px;
+}
+
+.p-dl dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.p-dl code,
+.p-texto code,
+.p-nota code,
+.p-bumps code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--cartao2);
+  color: var(--ouro-claro);
+  word-break: break-word;
+}
+
+.p-dl a code {
+  text-decoration: underline;
+  text-decoration-color: rgba(243, 188, 86, 0.4);
+  text-underline-offset: 2px;
+}
+
+.quebra {
+  word-break: break-all !important;
+}
+
+.p-preco {
+  font: 700 16px var(--titulo);
+  color: var(--ouro);
+}
+
+.p-pre {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #0a0a0b;
+  border: 1px solid var(--borda);
+  color: var(--ouro-claro);
+  font: 12px/1.5 var(--mono);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.p-num {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.p-num th,
+.p-num td {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--borda);
+  text-align: right;
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
+}
+
+.p-num tbody th {
+  padding-right: 10px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.p-num thead th {
+  color: var(--apagado);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.p-num td {
+  width: 76px;
+  color: var(--suave);
+}
+
+.p-num td b {
+  color: var(--texto);
+  font-size: 15px;
+}
+
+.p-num td small {
+  display: block;
+  color: var(--apagado);
+  font-size: 11.5px;
+}
+
+.p-ev {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p-ev li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  font-size: 13px;
+}
+
+.p-ev code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--cartao2);
+  color: var(--suave);
+  font-size: 12px;
+}
+
+.p-ev code.et {
+  color: var(--ouro-claro);
+}
+
+.p-ev code.hf {
+  color: #c4b5fd;
+}
+
+.p-ev code.mt {
+  color: #93c5fd;
+}
+
+.p-ev span {
+  color: var(--suave);
+}
+
+.p-bumps {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p-bumps li {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 12px 8px 8px;
+  border-radius: 13px;
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-left: 3px solid var(--cor);
+}
+
+.p-bumps img.mini {
+  width: 50px;
+  height: 50px;
+  border-radius: 9px;
+  object-fit: cover;
+}
+
+.p-bumps span {
+  flex: 1;
+  min-width: 0;
+}
+
+.p-bumps b {
+  display: block;
+  font-size: 14px;
+}
+
+.p-bumps small {
+  color: var(--suave);
+  font-size: 12px;
+}
+
+.p-bumps em {
+  color: var(--ouro);
+  font: 700 15px var(--titulo);
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.p-atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--borda);
+}
+
+.p-atalhos a {
+  padding: 7px 13px;
+  border-radius: 99px;
+  border: 1px solid rgba(243, 188, 86, 0.35);
+  background: rgba(243, 188, 86, 0.06);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.p-atalhos a::after {
+  content: " →";
+}
+
+.posts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.posts figure {
+  margin: 0;
+}
+
+.posts img {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--borda);
+}
+
+.posts figcaption {
+  margin-top: 6px;
+  color: var(--suave);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.painel .galeria img {
+  height: 340px;
+}
+
+.painel .galeria.baixa img {
+  height: 150px;
+}
+
+.telas-grade figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  max-width: 158px;
+  margin-top: 8px;
+  color: var(--suave);
+  font-size: 12.5px;
+  line-height: 1.3;
+}
+
+.telas-grade figcaption b {
+  color: var(--ouro);
+}
+
+.telas-grade figcaption code {
+  color: var(--apagado);
+  font-size: 11px;
+}
+
+.ver-inteira.mini {
+  margin: 0;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.painel .video {
+  width: 100%;
+  margin: 0;
+}
+
+.painel .video video {
+  width: 100%;
+  max-height: 420px;
+}
+
 .portao{min-height:100dvh;display:grid;place-items:center;padding:24px 16px}
 .portao form{width:min(380px,100%);padding:28px 24px;border-radius:22px;background:var(--cartao);border:1px solid var(--borda);text-align:center}
 .portao .selo{margin:0 auto 14px;width:52px;height:52px;font-size:24px}
@@ -1184,106 +2454,742 @@ footer {
 <label><input type="checkbox" name="lembrar" checked> Lembrar neste aparelho</label>
 <button type="submit">Entrar</button><p class="erro" role="alert"></p></form></div>
 <div id="conteudo"></div>
-<script>// Comportamento da página de revisão: ampliar e baixar imagem, marcar decisões e destacar a seção no menu.
-// Roda igual na versão aberta (fonte/site) e na cifrada; na cifrada, `window.revisaoImagem` decifra a imagem.
+<script>// Comportamento da página: o canvas (arrastar, zoom, ligações, minimapa e painel de cada bloco), as abas, ampliar e
+// baixar imagem e marcar decisões. Os dados do canvas vêm da própria página (#canvas-dados), não daqui.
+// Roda igual na versão aberta e na cifrada; na cifrada, `window.revisaoImagem` decifra a imagem.
 window.revisaoImagem = window.revisaoImagem || (async (ref) => ref);
 
 window.iniciarRevisao = () => {
-  const $ = (s) => document.querySelector(s);
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const raiz = document.documentElement;
+
+  /** Decifra as imagens de um trecho (na versão aberta elas já têm src). */
+  const carregar = (trecho) => {
+    for (const el of $$("[data-c]", trecho))
+      if (!el.getAttribute("src")) window.revisaoImagem(`c:${el.dataset.c}`).then((u) => (el.src = u));
+    for (const el of $$("[data-cposter]", trecho))
+      if (!el.getAttribute("poster")) window.revisaoImagem(`c:${el.dataset.cposter}`).then((u) => (el.poster = u));
+  };
+  /** Rola uma fileira de botões até deixar `b` no meio, sem mexer no resto da página. */
+  const centrarNaFileira = (b) => {
+    const fila = b.parentElement;
+    if (fila.scrollWidth > fila.clientWidth) fila.scrollTo({ left: b.offsetLeft - (fila.clientWidth - b.offsetWidth) / 2, behavior: "smooth" });
+  };
+
+  // ---------- ampliar imagem ----------
   const zoom = $("#zoom");
-  const area = $("#zoom-area");
-  const foto = $("#zoom-img");
-  const legenda = $("#zoom-legenda");
-  const baixar = $("#zoom-baixar");
-
-  const abrir = (src, texto, nome) => {
+  const zArea = $("#zoom-area");
+  const zFoto = $("#zoom-img");
+  const zLegenda = $("#zoom-legenda");
+  const zBaixar = $("#zoom-baixar");
+  const ampliar = (src, texto, nome) => {
     if (!src) return;
-    area.classList.remove("alta");
-    foto.src = src;
-    legenda.textContent = texto || "";
-    baixar.href = src;
-    baixar.download = `${(nome || "imagem").replace(/\.\w+$/, "")}.webp`;
+    zArea.classList.remove("alta");
+    zFoto.src = src;
+    zLegenda.textContent = texto || "";
+    zBaixar.href = src;
+    zBaixar.download = `${(nome || "imagem").replace(/\.\w+$/, "")}.webp`;
     zoom.hidden = false;
-    area.scrollTop = 0;
-    document.documentElement.classList.add("travado");
+    zArea.scrollTop = 0;
+    raiz.classList.add("travado");
   };
-  foto.addEventListener("load", () => area.classList.toggle("alta", foto.naturalHeight / foto.naturalWidth > 2.2));
-  const fechar = () => {
+  zFoto.addEventListener("load", () => zArea.classList.toggle("alta", zFoto.naturalHeight / zFoto.naturalWidth > 2.2));
+  const fecharZoom = () => {
     zoom.hidden = true;
-    foto.removeAttribute("src");
-    document.documentElement.classList.remove("travado");
+    zFoto.removeAttribute("src");
+    raiz.classList.remove("travado");
   };
-
   document.addEventListener("click", async (ev) => {
     const img = ev.target.closest("img[data-zoom]");
     if (img) {
-      const src = img.dataset.c ? await window.revisaoImagem(`c:${img.dataset.c}`) : img.currentSrc || img.src;
-      abrir(src, img.dataset.legenda, img.dataset.nome);
+      ampliar(img.dataset.c ? await window.revisaoImagem(`c:${img.dataset.c}`) : img.currentSrc || img.src, img.dataset.legenda, img.dataset.nome);
       return;
     }
     const botao = ev.target.closest("[data-abrir]");
     if (botao) {
-      abrir(await window.revisaoImagem(botao.dataset.abrir), botao.dataset.legenda, botao.dataset.nome);
+      ampliar(await window.revisaoImagem(botao.dataset.abrir), botao.dataset.legenda, botao.dataset.nome);
       return;
     }
-    if (ev.target === area || ev.target.id === "zoom-fechar") fechar();
-  });
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key === "Escape" && !zoom.hidden) fechar();
+    if (ev.target === zArea || ev.target.id === "zoom-fechar") fecharZoom();
   });
 
-  // Decisões marcadas ficam neste aparelho.
+  // ---------- decisões (ficam neste aparelho) ----------
   const CHAVE = "mr_decisoes";
   let feitas = [];
   try {
     feitas = JSON.parse(localStorage.getItem(CHAVE) || "[]");
   } catch {}
-  const caixas = [...document.querySelectorAll("[data-decisao]")];
+  const caixas = $$("[data-decisao]");
   const contar = () => {
     const n = caixas.filter((c) => c.checked).length;
-    for (const el of document.querySelectorAll("[data-feitas]")) el.textContent = n;
-    for (const el of document.querySelectorAll("[data-pendentes]")) el.textContent = caixas.length - n;
+    for (const el of $$("[data-feitas]")) el.textContent = n;
+    for (const el of $$("[data-pendentes]")) el.textContent = caixas.length - n;
   };
   for (const c of caixas) {
     c.checked = feitas.includes(c.dataset.decisao);
     c.addEventListener("change", () => {
-      const ids = caixas.filter((x) => x.checked).map((x) => x.dataset.decisao);
       try {
-        localStorage.setItem(CHAVE, JSON.stringify(ids));
+        localStorage.setItem(CHAVE, JSON.stringify(caixas.filter((x) => x.checked).map((x) => x.dataset.decisao)));
       } catch {}
       contar();
     });
   }
   contar();
 
-  // Destaca no menu a seção que está na tela.
-  const links = new Map([...document.querySelectorAll(".topo nav a")].map((a) => [a.getAttribute("href").slice(1), a]));
-  const vistas = new IntersectionObserver(
-    (entradas) => {
-      for (const en of entradas) {
-        if (!en.isIntersecting) continue;
-        for (const a of links.values()) a.classList.remove("ativo");
-        links.get(en.target.id)?.classList.add("ativo");
-      }
+  // ---------- topo e abas ----------
+  const topo = $(".topo");
+  const medirTopo = () => raiz.style.setProperty("--topo", `${topo.offsetHeight}px`);
+  medirTopo();
+  const abas = $$(".abas a");
+  const marcarAba = (id) => {
+    for (const a of abas) a.classList.toggle("ativo", a.dataset.aba === id);
+    const ativa = abas.find((a) => a.dataset.aba === id);
+    if (ativa) centrarNaFileira(ativa);
+  };
+  const secoes = $$(".vista-doc > section");
+  const vistasDoc = new IntersectionObserver(
+    (es) => {
+      if (!raiz.classList.contains("modo-doc")) return;
+      for (const en of es) if (en.isIntersecting) marcarAba(en.target.id);
     },
     { rootMargin: "-45% 0px -50% 0px" },
   );
-  for (const id of links.keys()) {
-    const s = document.getElementById(id);
-    if (s) vistas.observe(s);
-  }
+  for (const s of secoes) vistasDoc.observe(s);
 
-  // Link pra um documento abre ele.
-  const abrirDoc = () => {
-    const alvo = location.hash && document.querySelector(location.hash);
+  const canvas = criarCanvas();
+
+  function rota() {
+    let h = "";
+    try {
+      h = decodeURIComponent(location.hash.slice(1));
+    } catch {}
+    const [vista, no] = h.split("/");
+    if (!h || vista === "funil") {
+      raiz.classList.add("modo-canvas");
+      raiz.classList.remove("modo-doc");
+      marcarAba("funil");
+      canvas?.ativar();
+      if (no) canvas?.abrir(no, { focar: true, historico: false });
+      else canvas?.fechar({ historico: false });
+      return;
+    }
+    raiz.classList.remove("modo-canvas");
+    raiz.classList.add("modo-doc");
+    const alvo = document.getElementById(h);
     if (alvo?.tagName === "DETAILS") alvo.open = true;
-  };
-  window.addEventListener("hashchange", abrirDoc);
-  abrirDoc();
+    marcarAba(alvo?.closest(".vista-doc > section")?.id ?? "");
+    requestAnimationFrame(() => (alvo ? alvo.scrollIntoView() : scrollTo(0, 0)));
+  }
+  addEventListener("hashchange", rota);
+  addEventListener("resize", () => {
+    medirTopo();
+    canvas?.redimensionar();
+  });
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && !zoom.hidden) {
+      fecharZoom();
+      return;
+    }
+    if (raiz.classList.contains("modo-canvas") && zoom.hidden) canvas?.tecla(ev);
+  });
+  rota();
+
+  // ======================================================================
+  // Canvas
+  // ======================================================================
+  function criarCanvas() {
+    const el = $("#canvas");
+    const fonte = $("#canvas-dados");
+    if (!el || !fonte) return null;
+    const dados = JSON.parse(fonte.textContent);
+    const vista = $("#vista-canvas");
+    const mundo = $("#canvas-mundo");
+    const svg = $("#arestas");
+    const rotulosEl = $("#rotulos");
+    const faixasEl = $("#faixas");
+    const painel = $("#painel");
+    const rolagem = $("#painel-rolagem");
+    const zoomValor = $("#zoom-valor");
+    const mm = $("#minimapa-svg");
+    const dica = $(".dica-canvas");
+    const nos = new Map($$(".no", mundo).map((n) => [n.dataset.no, n]));
+    const NS = "http://www.w3.org/2000/svg";
+    const MIN = 0.12;
+    const MAX = 2.4;
+    const PORTA = { h: "r>l", v: "b>t" };
+    const PAD = 60;
+
+    let layout = null;
+    let pronto = false;
+    let caixas = {};
+    let W = 0;
+    let H = 0;
+    let t = { x: 0, y: 0, s: 1 };
+    let modo = "real";
+    let ativo = null;
+    let rotulos = [];
+    let vistaMm = null;
+
+    const num = (v) => Number(v ?? 0).toLocaleString("pt-BR");
+    const pct = (a, b) => {
+      if (!b) return "—";
+      const p = (a / b) * 100;
+      return `${(p < 10 && p > 0 ? Math.round(p * 10) / 10 : Math.round(p)).toLocaleString("pt-BR")}%`;
+    };
+    const svgEl = (tag, attrs) => {
+      const n = document.createElementNS(NS, tag);
+      for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+      return n;
+    };
+    const escolher = () => (innerWidth < 720 && innerHeight > innerWidth ? "v" : "h");
+    const telaCelular = () => innerWidth <= 700;
+
+    // ----- posições -----
+    function montar() {
+      layout = escolher();
+      el.classList.toggle("v", layout === "v");
+      vista.classList.toggle("v", layout === "v");
+      const L = dados.layouts[layout];
+      const tam = {};
+      for (const [id, n] of nos) tam[id] = [n.offsetWidth, n.offsetHeight];
+      let x0 = Infinity;
+      let y0 = Infinity;
+      let x1 = -Infinity;
+      let y1 = -Infinity;
+      const somar = (a, b, c, d) => {
+        x0 = Math.min(x0, a);
+        y0 = Math.min(y0, b);
+        x1 = Math.max(x1, c);
+        y1 = Math.max(y1, d);
+      };
+      for (const [id, [cx, cy]] of Object.entries(L.nos)) {
+        const [w, h] = tam[id] ?? [0, 0];
+        somar(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2);
+      }
+      for (const [, fx, fy, fw, fh] of L.faixas) somar(fx, fy, fx + fw, fy + fh);
+      const ox = PAD - x0;
+      const oy = PAD - y0;
+      W = x1 - x0 + 2 * PAD;
+      H = y1 - y0 + 2 * PAD;
+      caixas = {};
+      for (const [id, n] of nos) {
+        const pos = L.nos[id];
+        if (!pos) {
+          n.hidden = true;
+          continue;
+        }
+        const [w, h] = tam[id];
+        const x = pos[0] - w / 2 + ox;
+        const y = pos[1] - h / 2 + oy;
+        n.style.left = `${x}px`;
+        n.style.top = `${y}px`;
+        caixas[id] = { x, y, w, h };
+      }
+      faixasEl.textContent = "";
+      const faixas = L.faixas.map(([r, fx, fy, fw, fh]) => ({ r, x: fx + ox, y: fy + oy, w: fw, h: fh }));
+      for (const f of faixas) {
+        const d = document.createElement("div");
+        d.className = "faixa";
+        Object.assign(d.style, { left: `${f.x}px`, top: `${f.y}px`, width: `${f.w}px`, height: `${f.h}px` });
+        const s = document.createElement("span");
+        s.textContent = f.r;
+        d.append(s);
+        faixasEl.append(d);
+      }
+      mundo.style.width = `${W}px`;
+      mundo.style.height = `${H}px`;
+      svg.setAttribute("width", W);
+      svg.setAttribute("height", H);
+      desenharArestas();
+      desenharMinimapa(faixas);
+    }
+
+    function porta(c, lado, o) {
+      if (lado === "r") return [c.x + c.w, c.y + c.h / 2 + o, 1, 0];
+      if (lado === "l") return [c.x, c.y + c.h / 2 + o, -1, 0];
+      if (lado === "t") return [c.x + c.w / 2 + o, c.y, 0, -1];
+      return [c.x + c.w / 2 + o, c.y + c.h, 0, 1];
+    }
+
+    function desenharArestas() {
+      for (const p of $$("path.aresta, path.fluxo", svg)) p.remove();
+      rotulosEl.textContent = "";
+      rotulos = [];
+      for (const a of dados.arestas) {
+        const A = caixas[a.de];
+        const B = caixas[a.para];
+        if (!A || !B) continue;
+        const [pa, pb] = (a.portas?.[layout] ?? PORTA[layout]).split(">");
+        const o = a.o ?? 0;
+        const [x1, y1, dx1, dy1] = porta(A, pa, o);
+        const [x2, y2, dx2, dy2] = porta(B, pb, o);
+        const k = Math.max(46, Math.min(Math.hypot(x2 - x1, y2 - y1) * 0.45, 230));
+        const c1 = [x1 + dx1 * k, y1 + dy1 * k];
+        const c2 = [x2 + dx2 * k, y2 + dy2 * k];
+        const d = `M${x1},${y1} C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${x2},${y2}`;
+        const tipo = a.tipo ?? "principal";
+        const cor = { sim: "verde", nao: "cinza", futuro: "cinza", fonte: "fonte" }[tipo] ?? "ouro";
+        svg.append(svgEl("path", { class: `aresta ${tipo}`, d, "marker-end": `url(#seta-${cor})` }));
+        if (tipo !== "futuro") svg.append(svgEl("path", { class: `fluxo ${tipo}`, d }));
+        if (a.rotulo || a.num) {
+          const u = layout === "v" ? 0.5 + (o / 42) * 0.2 : 0.5;
+          const v = 1 - u;
+          const mx = v ** 3 * x1 + 3 * v * v * u * c1[0] + 3 * v * u * u * c2[0] + u ** 3 * x2;
+          const my = v ** 3 * y1 + 3 * v * v * u * c1[1] + 3 * v * u * u * c2[1] + u ** 3 * y2;
+          const r = document.createElement("div");
+          r.className = `rotulo ${tipo}${a.rotulo ? "" : " so-num"}`;
+          r.style.left = `${mx}px`;
+          r.style.top = `${my}px`;
+          if (a.rotulo) {
+            const s = document.createElement("span");
+            s.textContent = a.rotulo;
+            r.append(s);
+          }
+          const b = document.createElement("b");
+          if (a.num) r.append(b);
+          rotulosEl.append(r);
+          rotulos.push({ a, b });
+        }
+      }
+      preencherRotulos();
+    }
+
+    function preencherRotulos() {
+      const N = dados.numeros[modo];
+      for (const { a, b } of rotulos) if (a.num) b.textContent = pct(N[a.num], N[a.den]);
+    }
+
+    // ----- vista: deslocamento e escala -----
+    const ret = () => el.getBoundingClientRect();
+    function area(ignorarPainel = false) {
+      const r = ret();
+      let w = r.width;
+      let h = r.height;
+      if (!painel.hidden && !ignorarPainel) {
+        if (telaCelular()) h -= painel.offsetHeight;
+        else w -= painel.offsetWidth;
+      }
+      return { w: Math.max(w, 80), h: Math.max(h, 80) };
+    }
+    /** Altura da barra de cima do canvas (números e reais/testes). */
+    const topoLivre = () => {
+      const hud = $(".hud", vista);
+      return hud ? hud.offsetTop + hud.offsetHeight : 0;
+    };
+    const BASE = 66; // espaço das etapas embaixo
+
+    function aplicar() {
+      mundo.style.transform = `translate(${t.x}px, ${t.y}px) scale(${t.s})`;
+      let g = 26 * t.s;
+      while (g < 13) g *= 2;
+      el.style.backgroundSize = `${g}px ${g}px`;
+      el.style.backgroundPosition = `${t.x}px ${t.y}px`;
+      zoomValor.textContent = `${Math.round(t.s * 100)}%`;
+      atualizarMinimapa();
+    }
+
+    function animarPara(novo) {
+      el.classList.add("animando");
+      t = novo;
+      aplicar();
+      clearTimeout(animarPara.fim);
+      animarPara.fim = setTimeout(() => el.classList.remove("animando"), 340);
+    }
+
+    const limitar = (s) => Math.min(MAX, Math.max(MIN, s));
+    function zoomEm(fator, px, py, animar = false) {
+      const s = limitar(t.s * fator);
+      const k = s / t.s;
+      const novo = { x: px - (px - t.x) * k, y: py - (py - t.y) * k, s };
+      if (animar) animarPara(novo);
+      else {
+        t = novo;
+        aplicar();
+      }
+    }
+
+    /** Escala que cabe tudo na área. */
+    function escalaQueCabe() {
+      const a = area();
+      const m = layout === "v" ? 8 : 30;
+      return limitar(Math.min((a.w - 2 * m) / W, (a.h - topoLivre() - 10 - BASE) / H, 1));
+    }
+
+    function ajustar(animar = true) {
+      const a = area();
+      const s = escalaQueCabe();
+      const topo = topoLivre() + 10;
+      const novo = { s, x: (a.w - W * s) / 2, y: topo + (a.h - topo - BASE - H * s) / 2 };
+      if (animar) animarPara(novo);
+      else {
+        t = novo;
+        aplicar();
+      }
+    }
+
+    /** Vista de abertura: legível, começando pelo tráfego. */
+    function inicial() {
+      const a = area();
+      const topo = topoLivre() + 12;
+      if (layout === "v") {
+        const s = limitar(Math.min(1, (a.w - 12) / (W - 2 * PAD + 20)));
+        t = { s, x: (a.w - W * s) / 2, y: topo - (PAD - 8) * s };
+      } else {
+        const cs = Object.values(caixas);
+        const y0 = Math.min(...cs.map((c) => c.y));
+        const y1 = Math.max(...cs.map((c) => c.y + c.h));
+        const util = a.h - topo - BASE;
+        const s = Math.min(0.9, Math.max(0.5, util / (y1 - y0 + 30)));
+        if (escalaQueCabe() >= s) {
+          ajustar(false);
+          return;
+        }
+        t = { s, x: 22 - (PAD - 20) * s, y: topo + (util - (y1 - y0) * s) / 2 - y0 * s };
+      }
+      aplicar();
+    }
+
+    function centralizar(id, { escala, ignorarPainel = false } = {}) {
+      const c = caixas[id];
+      if (!c) return;
+      const a = area(ignorarPainel);
+      const topo = topoLivre();
+      const s = limitar(escala ?? Math.max(t.s, telaCelular() ? 0.7 : 0.8));
+      const util = a.h - topo - (painel.hidden || ignorarPainel ? BASE : 0);
+      const y = c.h * s > util - 16 ? topo + 8 - c.y * s : topo + (util - c.h * s) / 2 - c.y * s;
+      animarPara({ s, x: a.w / 2 - (c.x + c.w / 2) * s, y });
+    }
+
+    /** Se o bloco ficou atrás do painel ou fora da tela, traz ele pra vista. */
+    function mostrar(id) {
+      const c = caixas[id];
+      if (!c) return;
+      const a = area();
+      const x0 = t.x + c.x * t.s;
+      const x1 = x0 + c.w * t.s;
+      const y0 = t.y + c.y * t.s;
+      const y1 = y0 + c.h * t.s;
+      if (x0 < 0 || x1 > a.w || y0 < topoLivre() || y1 > a.h) centralizar(id, { escala: t.s });
+    }
+
+    // ----- minimapa -----
+    function desenharMinimapa(faixas) {
+      if (!mm) return;
+      mm.textContent = "";
+      mm.setAttribute("viewBox", `0 0 ${W} ${H}`);
+      for (const f of faixas) mm.append(svgEl("rect", { class: "mm-faixa", x: f.x, y: f.y, width: f.w, height: f.h, rx: 30 }));
+      for (const [id, c] of Object.entries(caixas))
+        mm.append(svgEl("rect", { class: `mm-no${nos.get(id).classList.contains("obra") ? " obra" : ""}`, "data-mm": id, x: c.x, y: c.y, width: c.w, height: c.h, rx: 18 }));
+      vistaMm = svgEl("rect", { class: "mm-vista", rx: 12 });
+      mm.append(vistaMm);
+      atualizarMinimapa();
+    }
+    function atualizarMinimapa() {
+      if (!vistaMm) return;
+      const a = area();
+      vistaMm.setAttribute("x", -t.x / t.s);
+      vistaMm.setAttribute("y", -t.y / t.s);
+      vistaMm.setAttribute("width", a.w / t.s);
+      vistaMm.setAttribute("height", a.h / t.s);
+    }
+    const mmIr = (ev) => {
+      const r = mm.getBoundingClientRect();
+      const wx = ((ev.clientX - r.left) / r.width) * W;
+      const wy = ((ev.clientY - r.top) / r.height) * H;
+      const a = area();
+      t = { ...t, x: a.w / 2 - wx * t.s, y: a.h / 2 - wy * t.s };
+      aplicar();
+    };
+    if (mm) {
+      mm.parentElement.addEventListener("pointerdown", (ev) => {
+        mm.parentElement.setPointerCapture(ev.pointerId);
+        mmIr(ev);
+        const mover = (e2) => mmIr(e2);
+        const soltar = () => {
+          mm.parentElement.removeEventListener("pointermove", mover);
+          mm.parentElement.removeEventListener("pointerup", soltar);
+        };
+        mm.parentElement.addEventListener("pointermove", mover);
+        mm.parentElement.addEventListener("pointerup", soltar);
+      });
+    }
+
+    // ----- arrastar, pinça e toque -----
+    const ponteiros = new Map();
+    let gesto = null;
+    let alvoNo = null;
+    let andou = 0;
+    let ultimoToque = 0;
+    let engolirClique = 0;
+    addEventListener(
+      "click",
+      (ev) => {
+        if (Date.now() - engolirClique > 600) return;
+        engolirClique = 0;
+        if (el.contains(ev.target)) return;
+        ev.stopPropagation();
+        ev.preventDefault();
+      },
+      true,
+    );
+    const local = (p) => {
+      const r = ret();
+      return { x: p.x - r.left, y: p.y - r.top };
+    };
+    function comecar() {
+      const ps = [...ponteiros.values()].map(local);
+      if (ps.length === 1) gesto = { tipo: "mover", x: ps[0].x, y: ps[0].y, t: { ...t } };
+      else if (ps.length >= 2) {
+        const [a, b] = ps;
+        const meio = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        gesto = { tipo: "pinca", d: Math.hypot(a.x - b.x, a.y - b.y) || 1, meio, t: { ...t } };
+      } else gesto = null;
+    }
+    function sumirDica() {
+      if (dica && !dica.classList.contains("some")) dica.classList.add("some");
+    }
+    el.addEventListener("pointerdown", (ev) => {
+      if (ev.pointerType === "mouse" && ev.button !== 0) return;
+      el.setPointerCapture(ev.pointerId);
+      ponteiros.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      if (ponteiros.size === 1) {
+        alvoNo = ev.target.closest(".no");
+        andou = 0;
+      } else alvoNo = null;
+      comecar();
+    });
+    el.addEventListener("pointermove", (ev) => {
+      if (!ponteiros.has(ev.pointerId) || !gesto) return;
+      const antes = ponteiros.get(ev.pointerId);
+      andou += Math.hypot(ev.clientX - antes.x, ev.clientY - antes.y);
+      ponteiros.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      const ps = [...ponteiros.values()].map(local);
+      if (gesto.tipo === "mover" && ps.length === 1) {
+        if (andou < 4) return;
+        el.classList.add("arrastando");
+        t = { ...t, x: gesto.t.x + ps[0].x - gesto.x, y: gesto.t.y + ps[0].y - gesto.y };
+        aplicar();
+        sumirDica();
+      } else if (gesto.tipo === "pinca" && ps.length >= 2) {
+        const [a, b] = ps;
+        const d = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+        const meio = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        const s = limitar(gesto.t.s * (d / gesto.d));
+        const wx = (gesto.meio.x - gesto.t.x) / gesto.t.s;
+        const wy = (gesto.meio.y - gesto.t.y) / gesto.t.s;
+        t = { s, x: meio.x - wx * s, y: meio.y - wy * s };
+        aplicar();
+        sumirDica();
+      }
+    });
+    const soltar = (ev) => {
+      if (!ponteiros.has(ev.pointerId)) return;
+      const eraUm = ponteiros.size === 1 && gesto?.tipo === "mover";
+      ponteiros.delete(ev.pointerId);
+      el.classList.remove("arrastando");
+      if (ev.type === "pointerup" && eraUm && andou < 6) {
+        if (alvoNo) {
+          // O clique que o navegador manda depois do toque cairia no painel que acabou de abrir.
+          engolirClique = Date.now();
+          abrir(alvoNo.dataset.no);
+        }
+        else {
+          // Dois toques no fundo: aproxima.
+          const agora = Date.now();
+          if (agora - ultimoToque < 320) {
+            const p = local({ x: ev.clientX, y: ev.clientY });
+            zoomEm(1.6, p.x, p.y, true);
+            ultimoToque = 0;
+          } else {
+            ultimoToque = agora;
+            if (!painel.hidden) fechar();
+          }
+        }
+      }
+      alvoNo = null;
+      comecar();
+    };
+    el.addEventListener("pointerup", soltar);
+    el.addEventListener("pointercancel", soltar);
+    el.addEventListener(
+      "wheel",
+      (ev) => {
+        ev.preventDefault();
+        sumirDica();
+        const p = local({ x: ev.clientX, y: ev.clientY });
+        if (ev.ctrlKey || ev.metaKey) zoomEm(Math.exp(-ev.deltaY * 0.0095), p.x, p.y);
+        else {
+          const k = ev.deltaMode === 1 ? 18 : 1;
+          t = { ...t, x: t.x - ev.deltaX * k, y: t.y - ev.deltaY * k };
+          aplicar();
+        }
+      },
+      { passive: false },
+    );
+    // Safari: pinça do trackpad.
+    let gs = null;
+    el.addEventListener("gesturestart", (ev) => {
+      ev.preventDefault();
+      gs = { s: t.s, ...local({ x: ev.clientX, y: ev.clientY }) };
+    });
+    el.addEventListener("gesturechange", (ev) => {
+      ev.preventDefault();
+      if (gs) zoomEm((gs.s * ev.scale) / t.s, gs.x, gs.y);
+    });
+    // Foco pelo teclado (ou busca do navegador) rola a caixa escondida: desfaz e leva a vista até o bloco.
+    for (const caixa of [el, vista])
+      caixa.addEventListener("scroll", () => {
+        caixa.scrollTop = 0;
+        caixa.scrollLeft = 0;
+      });
+    el.addEventListener("focusin", (ev) => {
+      const n = ev.target.closest(".no");
+      if (n && pronto && !ponteiros.size) mostrar(n.dataset.no);
+    });
+    for (const n of nos.values())
+      n.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          abrir(n.dataset.no);
+        }
+      });
+
+    // ----- controles -----
+    for (const b of $$("[data-zoom-acao]", vista))
+      b.addEventListener("click", () => {
+        const a = area();
+        const acao = b.dataset.zoomAcao;
+        if (acao === "mais") zoomEm(1.3, a.w / 2, a.h / 2, true);
+        else if (acao === "menos") zoomEm(1 / 1.3, a.w / 2, a.h / 2, true);
+        else if (acao === "cem") zoomEm(1 / t.s, a.w / 2, a.h / 2, true);
+        else ajustar();
+      });
+    for (const b of $$("[data-ir]", vista)) b.addEventListener("click", () => abrir(b.dataset.ir, { focar: true }));
+
+    // ----- reais ou testes -----
+    const botoesModo = $$("[data-modo]", vista).filter((b) => b.tagName === "BUTTON");
+    function definirModo(m) {
+      modo = m;
+      el.dataset.modo = m;
+      for (const b of botoesModo) b.setAttribute("aria-pressed", String(b.dataset.modo === m));
+      const N = dados.numeros[m];
+      for (const n of $$("[data-n]", vista)) n.textContent = num(N[n.dataset.n]);
+      for (const r of $$("[data-rotulo-modo]", vista)) r.textContent = m === "real" ? "visitas reais" : "acessos de teste";
+      const avisoReal = $("[data-aviso-real]", vista);
+      if (avisoReal) avisoReal.hidden = m !== "real";
+      const avisoTeste = $("[data-aviso-teste]", vista);
+      if (avisoTeste) avisoTeste.hidden = m !== "teste";
+      preencherRotulos();
+    }
+    for (const b of botoesModo) b.addEventListener("click", () => definirModo(b.dataset.modo));
+
+    // ----- painel -----
+    function marcarAtivo(id) {
+      ativo = id;
+      for (const [k, n] of nos) n.classList.toggle("ativo", k === id);
+      for (const r of $$("[data-mm]", mm || document)) r.classList.toggle("ativo", r.dataset.mm === id);
+      const passo = id ? nos.get(id)?.querySelector(".no-passo")?.textContent : null;
+      for (const b of $$("[data-ir]", vista)) {
+        const sim = passo !== null && b.querySelector("b")?.textContent === passo;
+        b.classList.toggle("ativo", sim);
+        if (sim) centrarNaFileira(b);
+      }
+    }
+    function abrir(id, { focar = false, historico = true } = {}) {
+      const sec = rolagem.querySelector(`[data-painel="${CSS.escape(id)}"]`);
+      if (!sec) return;
+      for (const s of $$(".painel-no", rolagem)) s.hidden = s !== sec;
+      $("#painel-titulo").textContent = sec.dataset.titulo || "";
+      painel.hidden = false;
+      painel.style.transform = "";
+      vista.classList.add("com-painel");
+      rolagem.scrollTop = 0;
+      carregar(sec);
+      marcarAtivo(id);
+      if (historico) history.replaceState(null, "", `#funil/${id}`);
+      atualizarMinimapa();
+      if (!pronto) return;
+      // No celular o painel cobre quase tudo: o bloco fica no meio pra quando ele fechar.
+      if (telaCelular()) {
+        if (focar) centralizar(id, { ignorarPainel: true });
+      } else if (focar) centralizar(id);
+      else mostrar(id);
+    }
+    function fechar({ historico = true } = {}) {
+      if (painel.hidden) return;
+      painel.hidden = true;
+      vista.classList.remove("com-painel");
+      for (const v of $$("video", painel)) v.pause();
+      marcarAtivo(null);
+      if (historico) history.replaceState(null, "", "#funil");
+      atualizarMinimapa();
+    }
+    $("#painel-fechar").addEventListener("click", () => fechar());
+
+    // Puxar a alça pra baixo fecha o painel (celular).
+    const alca = $("#painel-alca");
+    let puxada = null;
+    alca.addEventListener("pointerdown", (ev) => {
+      alca.setPointerCapture(ev.pointerId);
+      puxada = { y: ev.clientY, dy: 0 };
+    });
+    alca.addEventListener("pointermove", (ev) => {
+      if (!puxada) return;
+      puxada.dy = Math.max(0, ev.clientY - puxada.y);
+      painel.style.transform = `translateY(${puxada.dy}px)`;
+    });
+    const largar = () => {
+      if (!puxada) return;
+      if (puxada.dy > 110) fechar();
+      painel.style.transform = "";
+      puxada = null;
+    };
+    alca.addEventListener("pointerup", largar);
+    alca.addEventListener("pointercancel", largar);
+
+    // ----- ciclo de vida -----
+    function ativar() {
+      if (pronto) return;
+      carregar(mundo);
+      carregar($(".hud", vista));
+      montar();
+      inicial();
+      pronto = true;
+      if (ativo) abrir(ativo, { focar: true, historico: false });
+      document.fonts?.ready.then(() => {
+        const antes = { ...t };
+        montar();
+        t = antes;
+        aplicar();
+      });
+      setTimeout(sumirDica, 9000);
+    }
+    let ultimoLayout = null;
+    function redimensionar() {
+      if (!pronto || !raiz.classList.contains("modo-canvas")) return;
+      ultimoLayout = layout;
+      if (escolher() !== ultimoLayout) {
+        montar();
+        inicial();
+        if (ativo) mostrar(ativo);
+      } else aplicar();
+    }
+    function tecla(ev) {
+      if (ev.target.closest("input, textarea, select")) return;
+      const a = area();
+      if (ev.key === "Escape") fechar();
+      else if (ev.key === "+" || ev.key === "=") zoomEm(1.25, a.w / 2, a.h / 2, true);
+      else if (ev.key === "-") zoomEm(0.8, a.w / 2, a.h / 2, true);
+      else if (ev.key === "0") ajustar();
+    }
+
+    return { ativar, abrir, fechar, redimensionar, tecla };
+  }
 };
 </script><script>
 (() => {
-  const CFG = {"sal":"12AV6b9oa2x8YoRTy3UNEQ==","rodadas":600000,"pagina":"12ccfde31ac5e1ae922ed925"};
+  const CFG = {"sal":"A8syjffU3LMVSkKatr762w==","rodadas":600000,"pagina":"050cd317bacf86a8e42e2de9"};
   const LEMBRAR = "mr_chave";
   const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
   let CHAVE = null;
@@ -1323,7 +3229,7 @@ window.iniciarRevisao = () => {
         for (const e of es) {
           if (!e.isIntersecting) continue;
           // Numa fileira que rola de lado, já decifra a fileira toda.
-          const fileira = e.target.closest(".galeria, .funil, .grade, .extras, .bumps");
+          const fileira = e.target.closest(".galeria, .grade, .celulares, .canvas-mundo");
           for (const el of fileira ? fileira.querySelectorAll("[data-c],[data-cposter]") : [e.target]) {
             vistas.unobserve(el);
             if (el.dataset.c && !el.src) window.revisaoImagem("c:" + el.dataset.c).then((u) => (el.src = u));
@@ -1335,7 +3241,6 @@ window.iniciarRevisao = () => {
     );
     for (const el of document.querySelectorAll("[data-c],[data-cposter]")) vistas.observe(el);
     window.iniciarRevisao();
-    if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
   }
 
   const form = document.querySelector("#portao form");
