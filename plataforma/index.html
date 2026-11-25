@@ -100,8 +100,9 @@ img[data-c]:not([src]) {
   flex-shrink: 0;
 }
 
+/* O anel de foco é neutro: dourado em volta de um item parecia item marcado. */
 :focus-visible {
-  outline: 2px solid var(--ouro);
+  outline: 2px solid rgba(244, 244, 245, 0.5);
   outline-offset: 2px;
 }
 
@@ -122,34 +123,48 @@ img[data-c]:not([src]) {
   display: grid;
   grid-template-columns: var(--lateral) minmax(0, 1fr);
   min-height: 100dvh;
-  transition: grid-template-columns 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: grid-template-columns 0.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* Lateral. O símbolo, os ícones e o avatar ficam no mesmo eixo (a 20px da borda de dentro): recolher só corta os
+   nomes, nada muda de lugar pro lado. */
 .lateral {
   position: sticky;
   top: 0;
   z-index: 30;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 2px;
   height: 100dvh;
-  padding: 20px 12px 12px;
+  padding: 12px;
 }
 
-.marca {
+.lateral-topo {
   display: flex;
-  padding: 0 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
+  margin-bottom: 8px;
+}
+
+/* O logo inteiro; recolhida, a lateral corta ele na largura do símbolo. */
+.marca {
+  flex: none;
+  width: 170px;
+  height: 22px;
+  margin-left: 11px;
+  overflow: hidden;
 }
 
 .marca .logo {
+  display: block;
   width: auto;
-  height: 21px;
+  height: 22px;
 }
 
-.marca .simbolo {
-  display: none;
-  width: auto;
-  height: 24px;
+.lateral .botao-ico:hover {
+  background: var(--s2);
 }
 
 .nav {
@@ -171,8 +186,13 @@ img[data-c]:not([src]) {
 }
 
 .nav a {
-  position: relative;
-  transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  padding: 0 10px;
+  transition: transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.nav a:active,
+.conta:active {
+  transform: scale(0.98);
 }
 
 /* O nome encolhe junto com a lateral, sem quebrar linha. */
@@ -180,7 +200,12 @@ img[data-c]:not([src]) {
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
-  transition: opacity 0.16s;
+  transition: opacity 0.12s;
+}
+
+.nav a .ico {
+  width: 20px;
+  height: 20px;
 }
 
 .nav a .ico,
@@ -188,9 +213,17 @@ img[data-c]:not([src]) {
   color: var(--tinta3);
 }
 
-.nav a:hover,
+.nav a:hover {
+  background: var(--s2);
+  color: var(--tinta);
+}
+
+.nav a:hover .ico {
+  color: var(--tinta2);
+}
+
 .conta-sair:hover {
-  background: var(--s1);
+  background: var(--s3);
   color: var(--tinta);
 }
 
@@ -204,8 +237,15 @@ img[data-c]:not([src]) {
 }
 
 .lateral-pe {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: auto;
+  padding-top: 8px;
+}
+
+.conta-area {
+  position: relative;
 }
 
 .conta {
@@ -214,29 +254,36 @@ img[data-c]:not([src]) {
   gap: 10px;
   width: 100%;
   height: 48px;
-  padding: 0 8px;
+  padding: 0 8px 0 4px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   background: none;
   text-align: left;
   cursor: pointer;
   overflow: hidden;
-  transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.conta > .conta-txt,
-.conta > .ico {
-  transition: opacity 0.16s;
+.conta > .conta-txt {
+  transition: opacity 0.12s;
 }
 
 .conta:hover,
 .conta[aria-expanded="true"] {
-  background: var(--s1);
+  background: var(--s2);
 }
 
-.conta > .ico {
-  width: 16px;
-  height: 16px;
+/* A seta de trocar fica colada no nome: a linha de baixo fica com a largura toda pro endereço. */
+.conta-nome {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.conta-nome .ico {
+  width: 14px;
+  height: 14px;
   color: var(--tinta4);
 }
 
@@ -246,11 +293,18 @@ img[data-c]:not([src]) {
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: 50%;
   background: var(--s4);
-  color: var(--tinta);
+  color: var(--tinta2);
   font-size: 11px;
   font-weight: 600;
+}
+
+.conta > .avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--s3);
+  font-size: 12px;
 }
 
 .conta-txt {
@@ -1895,42 +1949,39 @@ html.com-gaveta .minimapa {
 
 /* ---------- telas menores ---------- */
 
-/* Lateral recolhida: só os ícones. O script põe a classe nas telas médias e, em qualquer largura, na tela do canvas,
-   pra ele ocupar quase a janela toda. Os nomes encolhem com a coluna; nada muda de lugar. */
+/* Lateral recolhida: só os ícones. O script põe a classe quando a pessoa recolhe, nas telas médias e, por padrão,
+   na tela do canvas, pra ele ocupar quase a janela toda. */
 html.trilho {
   --lateral: 64px;
 }
 
+html.trilho .lateral-topo {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
 html.trilho .marca {
-  justify-content: center;
-  padding: 0;
+  width: 18.4px;
+  margin-top: 9px;
 }
 
-html.trilho .marca .logo {
-  display: none;
-}
-
-html.trilho .marca .simbolo {
-  display: block;
-  animation: surgir 0.24s ease-out;
-}
-
-html.trilho .nav a {
-  padding: 0 11px;
-}
-
-html.trilho .conta {
-  padding: 0 6px;
+html.trilho .lateral-topo .botao-ico {
+  margin-left: 4px;
 }
 
 html.trilho .nav a span,
-html.trilho .conta > .conta-txt,
-html.trilho .conta > .ico {
+html.trilho .conta > .conta-txt {
   opacity: 0;
 }
 
-/* Com a lateral recolhida, o nome da tela aparece ao lado do ícone. */
-html.trilho .nav a::after {
+/* Com a lateral recolhida, o nome aparece ao lado do ícone. */
+html.trilho .lateral [data-dica] {
+  position: relative;
+}
+
+html.trilho .lateral [data-dica]::after {
   content: attr(data-dica);
   position: absolute;
   left: calc(100% + 14px);
@@ -1950,16 +2001,10 @@ html.trilho .nav a::after {
   transition: opacity 0.12s, transform 0.12s;
 }
 
-html.trilho .nav a:hover::after,
-html.trilho .nav a:focus-visible::after {
+html.trilho .lateral [data-dica]:hover::after,
+html.trilho .lateral [data-dica]:focus-visible::after {
   opacity: 1;
   transform: translate(0, -50%);
-}
-
-@keyframes surgir {
-  from {
-    opacity: 0;
-  }
 }
 
 /* Abrir de volta (e a primeira pintura) é na hora: as telas com gráfico já nascem na largura final. */
@@ -1978,6 +2023,11 @@ html.seco .lateral * {
 }
 
 @media (max-width: 1240px) {
+  /* Aqui a lateral fica sempre recolhida: o botão de recolher some. */
+  #lateral-botao {
+    display: none;
+  }
+
   .barra,
   .tela {
     padding-inline: 24px;
@@ -2016,26 +2066,44 @@ html.seco .lateral * {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    gap: 0;
     height: 52px;
     padding: 0 12px 0 16px;
   }
 
+  .lateral-topo {
+    min-height: 0;
+    margin: 0;
+  }
+
   .marca {
-    padding: 0;
+    width: auto;
+    height: 19px;
+    margin: 0;
   }
 
   .marca .logo {
-    display: block;
     height: 19px;
   }
 
-  .marca .simbolo,
   .nav {
     display: none;
   }
 
   .lateral-pe {
     margin: 0;
+    padding: 0;
+  }
+
+  /* No topo do celular a conta é só o avatar; o nome e o endereço aparecem no menu. */
+  .conta {
+    width: auto;
+    height: 40px;
+    padding: 0 4px;
+  }
+
+  .conta > .conta-txt {
+    display: none;
   }
 
   .conta-menu {
@@ -2491,12 +2559,13 @@ window.iniciarRevisao = () => {
   })();
   const lembrar = () => {
     try {
-      localStorage.setItem("mr_plataforma", JSON.stringify({ conta: E.conta.id, periodo: E.periodo }));
+      localStorage.setItem("mr_plataforma", JSON.stringify({ conta: E.conta.id, periodo: E.periodo, recolhida: E.recolhida }));
     } catch {}
   };
   const E = {
     conta: D.contas.find((c) => c.id === lembrado.conta) ?? D.contas[0],
     periodo: ["hoje", "7", "30", "90"].includes(lembrado.periodo) ? lembrado.periodo : "30",
+    recolhida: lembrado.recolhida === true,
     tela: null,
     A: null,
     P: null,
@@ -3660,21 +3729,36 @@ window.iniciarRevisao = () => {
   // ======================================================================
   // Telas, período, projeto
   // ======================================================================
-  // A lateral fica só nos ícones nas telas médias e, em qualquer largura, na tela do canvas.
+  // A lateral recolhe pra só os ícones: quando a pessoa pede (fica guardado), sempre nas telas médias e, por padrão,
+  // na tela do canvas. Lá o botão ainda abre, sem mexer no que está guardado, e ela volta a recolher na próxima entrada.
   const LARGURA = { media: matchMedia("(max-width: 1240px)"), celular: matchMedia("(max-width: 720px)") };
+  const lateralBotao = $("#lateral-botao");
+  let abriuNoCanvas = false;
   function recolher() {
-    const fina = !LARGURA.celular.matches && (LARGURA.media.matches || E.tela === "funil");
+    const noCanvas = E.tela === "funil";
+    const fina = !LARGURA.celular.matches && (LARGURA.media.matches || (noCanvas ? !abriuNoCanvas : E.recolhida));
     const primeira = !recolher.feito;
     recolher.feito = true;
+    lateralBotao.setAttribute("aria-expanded", String(!fina));
+    lateralBotao.setAttribute("aria-label", fina ? "Expandir a navegação" : "Recolher a navegação");
     if (!primeira && fina === raiz.classList.contains("trilho")) return;
-    // Recolher desliza; abrir de volta (e a primeira pintura) é na hora, pra tela já nascer na largura final.
-    if (primeira || !fina) {
+    // Só desliza na tela do canvas, que acompanha a largura. Nas outras é na hora, pra tela já nascer na largura final.
+    if (primeira || !noCanvas) {
       raiz.classList.add("seco");
       requestAnimationFrame(() => requestAnimationFrame(() => raiz.classList.remove("seco")));
     }
     raiz.classList.toggle("trilho", fina);
+    if (!primeira && !noCanvas) aoMudarLargura();
   }
   for (const m of Object.values(LARGURA)) m.addEventListener("change", recolher);
+  lateralBotao.addEventListener("click", () => {
+    if (E.tela === "funil") abriuNoCanvas = !abriuNoCanvas;
+    else {
+      E.recolhida = !E.recolhida;
+      lembrar();
+    }
+    recolher();
+  });
   function rota() {
     let h = "";
     try {
@@ -3683,6 +3767,7 @@ window.iniciarRevisao = () => {
     const [nome, no] = h.split("/");
     const id = telas[nome] ? nome : "geral";
     const mudou = E.tela !== id;
+    if (mudou) abriuNoCanvas = false;
     E.tela = id;
     for (const [k, t] of Object.entries(telas)) t.hidden = k !== id;
     for (const a of $$("[data-tela]")) a.classList.toggle("ativo", a.dataset.tela === id);
@@ -3761,7 +3846,7 @@ window.iniciarRevisao = () => {
     } else if (E.tela === "funil") canvas.tecla(ev);
   });
   let adiado = 0;
-  addEventListener("resize", () => {
+  function aoMudarLargura() {
     canvas.redimensionar();
     clearTimeout(adiado);
     adiado = setTimeout(() => {
@@ -3770,7 +3855,8 @@ window.iniciarRevisao = () => {
       if (!gaveta.hidden) graficos($(".gaveta-no:not([hidden])", rolagem));
       preencher(telas[E.tela]);
     }, 160);
-  });
+  }
+  addEventListener("resize", aoMudarLargura);
   addEventListener("hashchange", rota);
 
   textosDaConta();
@@ -3782,7 +3868,7 @@ window.iniciarRevisao = () => {
 };
 </script><script>
 (() => {
-  const CFG = {"sal":"qv5J22uOY1vbDYfgIU8bVA==","rodadas":600000,"pagina":"4e5ef1d5add75ed9b431ad0a","base":"../"};
+  const CFG = {"sal":"nhYlrvFhny3JHgB2I9REUA==","rodadas":600000,"pagina":"386c993e1a70808f5c722314","base":"../"};
   const LEMBRAR = "mr_chave";
   const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
   let CHAVE = null;
