@@ -122,11 +122,13 @@ img[data-c]:not([src]) {
   display: grid;
   grid-template-columns: var(--lateral) minmax(0, 1fr);
   min-height: 100dvh;
+  transition: grid-template-columns 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .lateral {
   position: sticky;
   top: 0;
+  z-index: 30;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -152,6 +154,7 @@ img[data-c]:not([src]) {
 
 .nav {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2px;
 }
 
@@ -165,6 +168,19 @@ img[data-c]:not([src]) {
   border-radius: 8px;
   color: var(--tinta2);
   font-weight: 500;
+}
+
+.nav a {
+  position: relative;
+  transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* O nome encolhe junto com a lateral, sem quebrar linha. */
+.nav a span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 0.16s;
 }
 
 .nav a .ico,
@@ -204,6 +220,13 @@ img[data-c]:not([src]) {
   background: none;
   text-align: left;
   cursor: pointer;
+  overflow: hidden;
+  transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.conta > .conta-txt,
+.conta > .ico {
+  transition: opacity 0.16s;
 }
 
 .conta:hover,
@@ -1872,42 +1895,89 @@ html.com-gaveta .minimapa {
 
 /* ---------- telas menores ---------- */
 
-@media (max-width: 1240px) {
-  :root {
-    --lateral: 64px;
-  }
+/* Lateral recolhida: só os ícones. O script põe a classe nas telas médias e, em qualquer largura, na tela do canvas,
+   pra ele ocupar quase a janela toda. Os nomes encolhem com a coluna; nada muda de lugar. */
+html.trilho {
+  --lateral: 64px;
+}
 
-  .lateral {
-    align-items: center;
-  }
+html.trilho .marca {
+  justify-content: center;
+  padding: 0;
+}
 
-  .marca .logo,
-  .nav a span,
-  .conta-txt,
-  .conta > .ico {
-    display: none;
-  }
+html.trilho .marca .logo {
+  display: none;
+}
 
-  .marca .simbolo {
-    display: block;
-  }
+html.trilho .marca .simbolo {
+  display: block;
+  animation: surgir 0.24s ease-out;
+}
 
-  .nav a {
-    width: 40px;
-    justify-content: center;
-    padding: 0;
-  }
+html.trilho .nav a {
+  padding: 0 11px;
+}
 
+html.trilho .conta {
+  padding: 0 6px;
+}
+
+html.trilho .nav a span,
+html.trilho .conta > .conta-txt,
+html.trilho .conta > .ico {
+  opacity: 0;
+}
+
+/* Com a lateral recolhida, o nome da tela aparece ao lado do ícone. */
+html.trilho .nav a::after {
+  content: attr(data-dica);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--sobre);
+  box-shadow: var(--sombra-pop);
+  color: var(--tinta);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-4px, -50%);
+  transition: opacity 0.12s, transform 0.12s;
+}
+
+html.trilho .nav a:hover::after,
+html.trilho .nav a:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+@keyframes surgir {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Abrir de volta (e a primeira pintura) é na hora: as telas com gráfico já nascem na largura final. */
+html.seco .app,
+html.seco .lateral * {
+  transition: none !important;
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app,
+  .nav a,
   .conta {
-    width: 44px;
-    justify-content: center;
-    padding: 0;
+    transition: none;
   }
+}
 
-  .conta-menu .conta-txt {
-    display: grid;
-  }
-
+@media (max-width: 1240px) {
   .barra,
   .tela {
     padding-inline: 24px;
@@ -3518,6 +3588,7 @@ window.iniciarRevisao = () => {
       setTimeout(sumirAviso, 9000);
     }
     let ultimoLayout = null;
+    if (window.ResizeObserver) new ResizeObserver(() => redimensionar()).observe(caixa);
     function redimensionar() {
       if (!pronto || E.tela !== "funil") return;
       ultimoLayout = layout;
@@ -3589,6 +3660,21 @@ window.iniciarRevisao = () => {
   // ======================================================================
   // Telas, período, projeto
   // ======================================================================
+  // A lateral fica só nos ícones nas telas médias e, em qualquer largura, na tela do canvas.
+  const LARGURA = { media: matchMedia("(max-width: 1240px)"), celular: matchMedia("(max-width: 720px)") };
+  function recolher() {
+    const fina = !LARGURA.celular.matches && (LARGURA.media.matches || E.tela === "funil");
+    const primeira = !recolher.feito;
+    recolher.feito = true;
+    if (!primeira && fina === raiz.classList.contains("trilho")) return;
+    // Recolher desliza; abrir de volta (e a primeira pintura) é na hora, pra tela já nascer na largura final.
+    if (primeira || !fina) {
+      raiz.classList.add("seco");
+      requestAnimationFrame(() => requestAnimationFrame(() => raiz.classList.remove("seco")));
+    }
+    raiz.classList.toggle("trilho", fina);
+  }
+  for (const m of Object.values(LARGURA)) m.addEventListener("change", recolher);
   function rota() {
     let h = "";
     try {
@@ -3601,6 +3687,7 @@ window.iniciarRevisao = () => {
     for (const [k, t] of Object.entries(telas)) t.hidden = k !== id;
     for (const a of $$("[data-tela]")) a.classList.toggle("ativo", a.dataset.tela === id);
     raiz.dataset.tela = id;
+    recolher();
     $("#tela-titulo").textContent = D.telas[id];
     if (id === "funil") {
       canvas.ativar();
@@ -3695,7 +3782,7 @@ window.iniciarRevisao = () => {
 };
 </script><script>
 (() => {
-  const CFG = {"sal":"VG9NbEyiuV+5n/+puC+QTw==","rodadas":600000,"pagina":"8d0b2ed33eecedf1d1c367b5","base":"../"};
+  const CFG = {"sal":"RcFQo2Pkd0c8ROFN1aKTZw==","rodadas":600000,"pagina":"c9a16c4a837b067ff0f8f723","base":"../"};
   const LEMBRAR = "mr_chave";
   const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
   let CHAVE = null;
