@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Revisão do funil</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet"><style>/* Página de revisão: tema escuro e dourado. */
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>Revisão do funil</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet"><style>/* Página de revisão: tema escuro e dourado. */
 :root {
   color-scheme: dark;
   --fundo: #0c0c0d;
@@ -170,6 +170,18 @@ button {
 .abas a.ativo {
   color: var(--ouro);
   background: rgba(243, 188, 86, 0.1);
+}
+
+/* Link pro protótipo da plataforma (outra página) */
+.abas a.aba-fora {
+  margin-left: 6px;
+  border: 1px solid rgba(243, 188, 86, 0.35);
+  color: var(--ouro-claro);
+}
+
+.abas a.aba-fora .ico {
+  width: 14px;
+  height: 14px;
 }
 
 .abas i {
@@ -2177,7 +2189,7 @@ footer {
 .p-dl code,
 .p-texto code,
 .p-nota code,
-.p-bumps code {
+.p-somas code {
   padding: 1px 5px;
   border-radius: 5px;
   background: var(--cartao2);
@@ -2297,7 +2309,7 @@ footer {
   color: var(--suave);
 }
 
-.p-bumps {
+.p-somas {
   display: grid;
   gap: 8px;
   margin: 0;
@@ -2305,7 +2317,7 @@ footer {
   list-style: none;
 }
 
-.p-bumps li {
+.p-somas li {
   display: flex;
   align-items: center;
   gap: 11px;
@@ -2316,29 +2328,29 @@ footer {
   border-left: 3px solid var(--cor);
 }
 
-.p-bumps img.mini {
+.p-somas img.mini {
   width: 50px;
   height: 50px;
   border-radius: 9px;
   object-fit: cover;
 }
 
-.p-bumps span {
+.p-somas span {
   flex: 1;
   min-width: 0;
 }
 
-.p-bumps b {
+.p-somas b {
   display: block;
   font-size: 14px;
 }
 
-.p-bumps small {
+.p-somas small {
   color: var(--suave);
   font-size: 12px;
 }
 
-.p-bumps em {
+.p-somas em {
   color: var(--ouro);
   font: 700 15px var(--titulo);
   font-style: normal;
@@ -3189,13 +3201,13 @@ window.iniciarRevisao = () => {
 };
 </script><script>
 (() => {
-  const CFG = {"sal":"r2ABfOxi2foHVdUTjOombw==","rodadas":600000,"pagina":"dd47fc8fc94c423c00f87b2e"};
+  const CFG = {"sal":"k+bSuNQfSdjVgW7cANzi2g==","rodadas":600000,"pagina":"0d58983362358fc7d322f54e","base":""};
   const LEMBRAR = "mr_chave";
   const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
   let CHAVE = null;
   const decifrar = async (buf) => crypto.subtle.decrypt({ name: "AES-GCM", iv: buf.slice(0, 12) }, CHAVE, buf.slice(12));
   const baixar = async (n) => {
-    const r = await fetch("c/" + n + ".bin");
+    const r = await fetch(CFG.base + "c/" + n + ".bin");
     if (!r.ok) throw new Error("arquivo " + r.status);
     return r.arrayBuffer();
   };
