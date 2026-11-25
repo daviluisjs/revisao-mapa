@@ -826,8 +826,12 @@ html[data-tela="conexoes"] .periodo {
   margin-top: 20px;
 }
 
+/* A lista é uma fila: a venda nova entra por cima e a última sai por baixo, as duas cortadas na borda. */
 .feed {
+  position: relative;
+  flex: none;
   margin-top: 4px;
+  overflow: hidden;
 }
 
 .feed li {
@@ -867,15 +871,10 @@ html[data-tela="conexoes"] .periodo {
   white-space: nowrap;
 }
 
-.feed li.novo {
-  animation: chegou 0.26s ease-out;
-}
-
-@keyframes chegou {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
+.feed li.saindo {
+  position: absolute;
+  right: 0;
+  left: 0;
 }
 
 .agora-pe {
@@ -2811,6 +2810,7 @@ window.iniciarRevisao = () => {
       vivo.ultimo = t;
       canvas?.ponto(s.aresta, s.para);
       if (venda) canvas?.comemorar(de, `+${fmtD(venda.ganho)}`);
+      if (venda) vivo.chegou = true;
     }
     colocar(p, s.para, t);
     return true;
@@ -2867,7 +2867,74 @@ window.iniciarRevisao = () => {
     const s = Math.max(0, Math.round((Date.now() - t) / 1000));
     return s < 6 ? "agora" : s < 60 ? `há ${s} s` : s < 3600 ? `há ${Math.round(s / 60)} min` : `há ${Math.round(s / 3600)} h`;
   };
-  const vistos = new Set();
+  // A lista de vendas é uma fila: a linha nova entra por cima, as outras descem e a última sai por baixo.
+  // Cada linha fica no documento enquanto a venda estiver na lista; só o "há X" é reescrito.
+  const fila = new Map();
+  const CURVA = { duration: 640, easing: "cubic-bezier(0.25, 1, 0.5, 1)" };
+  function pintarFila(ul, itens, vazio) {
+    if (!ul) return;
+    if (!itens.length) {
+      if (fila.size || !ul.firstChild) {
+        fila.clear();
+        ul.textContent = "";
+        ul.append(el("li", "vazio", vazio));
+      }
+      return;
+    }
+    const mexe = animar && !calmo && fila.size > 0 && ul.offsetParent !== null;
+    const alto = mexe ? ul.getBoundingClientRect().top : 0;
+    const antes = new Map();
+    if (mexe) for (const [id, li] of fila) antes.set(id, li.getBoundingClientRect().top);
+    const ficam = new Set(itens.map((it) => it.id));
+    const saem = [];
+    for (const [id, li] of fila)
+      if (!ficam.has(id)) {
+        fila.delete(id);
+        if (!mexe) {
+          li.remove();
+          continue;
+        }
+        // Quem sai fica solto no lugar em que estava, pra não segurar a fila enquanto some.
+        for (const a of li.getAnimations()) a.cancel();
+        li.style.top = `${antes.get(id) - alto}px`;
+        li.classList.add("saindo");
+        saem.push(li);
+      }
+    for (const li of $$(mexe ? "li.vazio" : "li.vazio, li.saindo", ul)) li.remove();
+    let novas = 0;
+    itens.forEach((it, i) => {
+      let li = fila.get(it.id);
+      if (!li) {
+        li = el("li", it.venda ? "venda" : "");
+        const txt = el("div");
+        // A lista já diz que é venda: o título é só o que foi vendido.
+        txt.append(el("b", "", it.venda?.nome ?? it.texto), el("small"));
+        li.append(txt);
+        if (it.venda) li.append(el("em", "", `+${fmtD(it.venda.ganho)}`));
+        fila.set(it.id, li);
+        if (mexe) novas++;
+      }
+      const quando = `${it.origem} · ${ha(it.t)}`;
+      const small = li.firstElementChild.lastElementChild;
+      if (small.textContent !== quando) small.textContent = quando;
+      if (ul.children[i] !== li) ul.insertBefore(li, ul.children[i] ?? null);
+    });
+    if (!mexe || (!novas && !saem.length)) return;
+    for (const [id, li] of fila) {
+      for (const a of li.getAnimations()) a.cancel();
+      const nova = !antes.has(id);
+      const de = nova ? -novas * li.offsetHeight : antes.get(id) - li.getBoundingClientRect().top;
+      if (!nova && Math.abs(de) < 0.5) continue;
+      li.animate([{ transform: `translateY(${de}px)`, opacity: nova ? 0 : 1 }, { transform: "none", opacity: 1 }], CURVA);
+      // O valor da venda nova chega em dourado e assenta na cor do resto.
+      const em = nova && li.querySelector("em");
+      if (em) em.animate([{ color: COR.ouro }, { color: COR.ouro, offset: 0.45 }, { color: getComputedStyle(em).color }], { duration: 2400, easing: "ease-out" });
+    }
+    for (const li of saem) {
+      const fim = () => li.remove();
+      li.animate([{ transform: "none", opacity: 1 }, { transform: `translateY(${Math.max(novas, 1) * li.offsetHeight}px)`, opacity: 0 }], CURVA).finished.then(fim, fim);
+    }
+  }
   function pintarVivo() {
     const porNo = {};
     for (const p of vivo.pessoas) porNo[p.no] = (porNo[p.no] ?? 0) + 1;
@@ -2886,24 +2953,7 @@ window.iniciarRevisao = () => {
     }
     for (const no of $$("[data-agora-soma]")) escrever(no, no.dataset.agoraSoma.split("+").reduce((t, k) => t + (porNo[k] ?? 0), 0));
     for (const no of $$("[data-vivo-ultimo]")) no.textContent = no.dataset.vivoUltimo === "venda" ? (vivo.vendas[0] ? ha(vivo.vendas[0].t) : "—") : ha(vivo.ultimo);
-    const lista = (ul, itens, vazio) => {
-      if (!ul) return;
-      ul.textContent = "";
-      if (!itens.length) ul.append(el("li", "vazio", vazio));
-      for (const it of itens) {
-        const li = el("li", it.venda ? "venda" : "");
-        if (!vistos.has(it.id)) {
-          vistos.add(it.id);
-          if (animar) li.classList.add("novo");
-        }
-        const txt = el("div");
-        txt.append(el("b", "", it.texto), el("small", "", `${it.origem} · ${ha(it.t)}`));
-        li.append(txt);
-        if (it.venda) li.append(el("em", "", `+${fmtD(it.venda.ganho)}`));
-        ul.append(li);
-      }
-    };
-    lista($("#feed-vendas"), vivo.vendas, "Nenhuma venda ainda hoje.");
+    pintarFila($("#feed-vendas"), vivo.vendas, "Nenhuma venda ainda hoje.");
   }
   setInterval(() => {
     const t = Date.now();
@@ -2918,13 +2968,18 @@ window.iniciarRevisao = () => {
       for (const p of vivo.pessoas) p.sai += dt;
     }
     andar(t, false);
+    // Venda nova: a lista e os totais mudam na hora, juntos, sem esperar a próxima volta.
+    if (vivo.chegou) repintar();
   }, 250);
-  setInterval(pintarVivo, 1000);
-  setInterval(() => {
-    if (!sujo) return;
+  const repintar = () => {
+    vivo.chegou = false;
     sujo = false;
     recalcular();
     pintar(false);
+  };
+  setInterval(pintarVivo, 1000);
+  setInterval(() => {
+    if (sujo) repintar();
   }, 900);
 
   // ======================================================================
@@ -3640,7 +3695,7 @@ window.iniciarRevisao = () => {
 };
 </script><script>
 (() => {
-  const CFG = {"sal":"k+bSuNQfSdjVgW7cANzi2g==","rodadas":600000,"pagina":"40487226c373a3d3cca11966","base":"../"};
+  const CFG = {"sal":"VG9NbEyiuV+5n/+puC+QTw==","rodadas":600000,"pagina":"8d0b2ed33eecedf1d1c367b5","base":"../"};
   const LEMBRAR = "mr_chave";
   const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
   let CHAVE = null;
